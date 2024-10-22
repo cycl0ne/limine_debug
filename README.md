@@ -4,7 +4,14 @@ This repository is based of the C-Template from Limine. Instead of giving you ju
 Included is a printf to Serial out (thus the -serial stdio).
 
 Its headless at the moment, so you can use it in the Github Codespace to play with it.
+Included is also a PML4 Page Table "Walker", showing you the Table with its Flags (I assumed the following to be important: Read, Write, eXecute and Cache)
 
+As you can see from the PML4 Table, all Access to memory on Bootup should be done through the HHDM (Higher Half Direct Map). Accessing the Memory normaly will result in an Page Fault.
+
+Next Steps would be:
+* Initialize an own GDT
+* Initialize an own IDT
+* Create Functions for FRAME/VMM
 
 ## Makefile targets
 
