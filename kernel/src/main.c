@@ -41,7 +41,7 @@ struct limine_memmap_request memmap_request = {
     .revision = 0, .response = NULL
 };
 
-__attribute__((section(".limine_requests")))
+__attribute__((section(".requests")))
 static volatile struct limine_kernel_address_request kernel_address_request = {
     .id = LIMINE_KERNEL_ADDRESS_REQUEST,
     .revision = 0, .response = NULL
@@ -106,9 +106,12 @@ void kmain(void) {
         printf("Virtual base: %x\n", ka_response->virtual_base);
     }
 
-    uint64_t *cr3;
+    uintptr_t cr3;
     __asm__ __volatile__("mov %%cr3, %0" : "=a"(cr3));
-    print_compacted_memory_ranges(cr3);
+    printf("CR3: %x\n", cr3);
+    cr3 = cr3 + 0xffff800000000000;
+    printf("CR3: %x\n", cr3);
+    print_compacted_memory_ranges((uint64_t *)cr3);
     // We're done, just hang...
     hcf();
 }

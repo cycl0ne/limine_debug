@@ -75,7 +75,6 @@ static void printdec(size_t num) {
 }
 
 // A simplified printf function supporting %x, %d, and %s format specifiers.
-// It appends a newline character at the end.
 void printf(const char *format, ...) {
     va_list argp;
     va_start(argp, format);
