@@ -1,24 +1,12 @@
-# Limine C Template
+# Limine Extension of the C Template
 
-This repository will demonstrate how to set up a basic kernel in C using Limine.
+This repository is based of the C-Template from Limine. Instead of giving you just a screen with a line, this code here shows you some first steps on using the template.
+Included is a printf to Serial out (thus the -serial stdio).
 
-## How to use this?
+Its headless at the moment, so you can use it in the Github Codespace to play with it.
 
-### Dependencies
 
-Any `make` command depends on GNU make (`gmake`) and is expected to be run using it. This usually means using `make` on most GNU/Linux distros, or `gmake` on other non-GNU systems.
-
-It is recommended to build this project using a standard UNIX-like system, using a Clang/LLVM toolchain capable of cross compilation (the default, unless `KCC` and/or `KLD` are explicitly set).
-
-Additionally, building an ISO with `make all` requires `xorriso`, and building a HDD/USB image with `make all-hdd` requires `sgdisk` (usually from `gdisk` or `gptfdisk` packages) and `mtools`.
-
-### Architectural targets
-
-The `KARCH` make variable determines the target architecture to build the kernel and image for.
-
-The default `KARCH` is `x86_64`. Other options include: `aarch64`, `loongarch64`, and `riscv64`.
-
-### Makefile targets
+## Makefile targets
 
 Running `make all` will compile the kernel (from the `kernel/` directory) and then generate a bootable ISO image.
 
