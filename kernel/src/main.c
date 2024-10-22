@@ -72,28 +72,42 @@ void kmain(void) {
     init_print();
     printf("Booting Limine Template Kernel\n");
 
-    // Ensure we got a framebuffer.
-    if (framebuffer_request.response == NULL
-     || framebuffer_request.response->framebuffer_count < 1) {
-        //hcf();
-        printf("No Framebuffer found\n");
+   if (framebuffer_request.response == NULL) {
+        printf("Framebuffer not passed");
     } else {
-        // Fetch the first framebuffer.
-        struct limine_framebuffer *framebuffer = framebuffer_request.response->framebuffers[0];
-        // Note: we assume the framebuffer model is RGB with 32-bit pixels.
-        for (size_t i = 0; i < 100; i++) {
-            volatile uint32_t *fb_ptr = framebuffer->address;
-            fb_ptr[i * (framebuffer->pitch / 4) + i] = 0xffffff;
+        struct limine_framebuffer_response *fb_response = framebuffer_request.response;
+        printf("Framebuffers feature, revision %d\n", fb_response->revision);
+        printf("%d framebuffer(s)\n", fb_response->framebuffer_count);
+        for (size_t i = 0; i < fb_response->framebuffer_count; i++) {
+            struct limine_framebuffer *fb = fb_response->framebuffers[i];
+            printf("Address: %lx\n", fb->address);
+            printf("Width: %d\n", fb->width);
+            printf("Height: %d\n", fb->height);
+            printf("Pitch: %d\n", fb->pitch);
+            printf("BPP: %d\n", fb->bpp);
+            printf("Memory model: %d\n", fb->memory_model);
+            printf("Red mask size: %d\n", fb->red_mask_size);
+            printf("Red mask shift: %d\n", fb->red_mask_shift);
+            printf("Green mask size: %d\n", fb->green_mask_size);
+            printf("Green mask shift: %d\n", fb->green_mask_shift);
+            printf("Blue mask size: %d\n", fb->blue_mask_size);
+            printf("Blue mask shift: %d\n", fb->blue_mask_shift);
+            printf("EDID size: %d\n", fb->edid_size);
+            printf("EDID at: %x\n", fb->edid);
+            printf("Video modes:\n");
+            for (size_t j = 0; j < fb->mode_count; j++) {
+                printf("  %dx%dx%d\n", fb->modes[j]->width, fb->modes[j]->height, fb->modes[j]->bpp);
+            }
         }
     }
 
-   if (hhdm_request.response == NULL) {
+    if (hhdm_request.response == NULL) {
         printf("HHDM not passed\n");
         // hcf();
     } else {
         struct limine_hhdm_response *hhdm_response = hhdm_request.response;
         printf("HHDM feature, revision %d\n", hhdm_response->revision);
-        printf("Higher half direct map at: %x\n", hhdm_response->offset);
+        printf("Higher half direct map at: %lx\n", hhdm_response->offset);
     }
 
     if (kernel_address_request.response == NULL) {
@@ -102,16 +116,31 @@ void kmain(void) {
     } else {
         struct limine_kernel_address_response *ka_response = kernel_address_request.response;
         printf("Kernel address feature, revision %d\n", ka_response->revision);
-        printf("Physical base: %x\n", ka_response->physical_base);
-        printf("Virtual base: %x\n", ka_response->virtual_base);
+        printf("Physical base: %lx\n", ka_response->physical_base);
+        printf("Virtual base: %lx\n", ka_response->virtual_base);
     }
 
     uintptr_t cr3;
     __asm__ __volatile__("mov %%cr3, %0" : "=a"(cr3));
-    printf("CR3: %x\n", cr3);
-    cr3 = cr3 + 0xffff800000000000;
-    printf("CR3: %x\n", cr3);
-    print_compacted_memory_ranges((uint64_t *)cr3);
+    uint64_t offset =  hhdm_request.response->offset;
+    print_compacted_memory_ranges((uint64_t *)cr3, offset);
+
     // We're done, just hang...
+
+    // // Ensure we got a framebuffer.
+    // if (framebuffer_request.response == NULL
+    //  || framebuffer_request.response->framebuffer_count < 1) {
+    //     //hcf();
+    //     printf("No Framebuffer found\n");
+    // } else {
+    //     // Fetch the first framebuffer.
+    //     struct limine_framebuffer *framebuffer = framebuffer_request.response->framebuffers[0];
+    //     // Note: we assume the framebuffer model is RGB with 32-bit pixels.
+    //     for (size_t i = 0; i < 100; i++) {
+    //         volatile uint32_t *fb_ptr = framebuffer->address;
+    //         fb_ptr[i * (framebuffer->pitch / 4) + i] = 0xffffff;
+    //     }
+    // }
+
     hcf();
 }

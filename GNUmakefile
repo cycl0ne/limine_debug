@@ -8,8 +8,8 @@ override USER_VARIABLE = $(if $(filter $(origin $(1)),default undefined),$(eval 
 # Target architecture to build for. Default to x86_64.
 $(call USER_VARIABLE,KARCH,x86_64)
 
-# Default user QEMU flags. These are appended to the QEMU command calls.
-$(call USER_VARIABLE,QEMUFLAGS,-m 2G  -serial stdio -display none -d int -no-shutdown -no-reboot -smp sockets=1,cores=2)
+# Default user QEMU flags. These are appended to the QEMU command calls. -d int -no-shutdown -no-reboot 
+$(call USER_VARIABLE,QEMUFLAGS,-m 2G  -serial stdio -display none -smp sockets=1,cores=2)
 
 override IMAGE_NAME := template-$(KARCH)
 
